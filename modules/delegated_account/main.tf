@@ -18,7 +18,8 @@ resource "aws_lambda_function" "alternate_contact_lambda" {
   #checkov:skip=CKV_AWS_116
   #checkov:skip=CKV_AWS_117
   #checkov:skip=CKV_AWS_173
-  filename                       = "${path.module}/lambda/alternate-contact.zip"
+  filename                       = data.archive_file.lambda_zip.output_path
+  source_code_hash               = data.archive_file.lambda_zip.output_base64sha256
   function_name                  = var.lambda_function_name
   role                           = aws_iam_role.alternate_contact_role.arn
   reserved_concurrent_executions = var.reserved_concurrent_executions
@@ -35,6 +36,12 @@ resource "aws_lambda_function" "alternate_contact_lambda" {
       management_account_id = var.management_account_id
     }
   }
+
+  lifecycle {
+    ignore_changes = [ filename ]
+  }
+
+
 }
 
 resource "aws_lambda_permission" "allow_cloudwatch_run" {
