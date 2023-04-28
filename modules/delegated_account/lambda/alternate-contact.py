@@ -12,9 +12,19 @@ BILL_ALTERNATE_CONTACTS = os.environ.get("operations_alternate_contact")
 OPS_ALTERNATE_CONTACTS = os.environ.get("billing_alternate_contact")
 MANAGEMENT_ACCOUNT_ID = os.environ.get("management_account_id")
 
-LISTED_ACCOUNTS = ORG_CLIENT.list_accounts()
-FAILED_ACCOUNTS = []
 CONTACTS = []
+FAILED_ACCOUNTS = []
+
+def list_accounts(client):
+    response = client.list_accounts()
+    accounts = []
+    while response:
+        accounts += response["Accounts"]
+        if "NextToken" in response:
+            response = client.list_accounts(NextToken = response["NextToken"])
+        else:
+            response = None
+    return accounts
 
 
 def parse_contact_types():
@@ -45,7 +55,7 @@ def put_alternate_contact(accountId):
 
 def lambda_handler(event, context):
     parse_contact_types()
-    for account in LISTED_ACCOUNTS["Accounts"]:
+    for account in list_accounts(ORG_CLIENT):
         if account["Status"] != "SUSPENDED" and account["Id"] != MANAGEMENT_ACCOUNT_ID:
             put_alternate_contact(account["Id"])
 
