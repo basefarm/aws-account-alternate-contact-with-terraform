@@ -30,9 +30,10 @@ resource "aws_lambda_function" "alternate_contact_lambda" {
   tags = var.tags
   environment {
     variables = {
-      security_alternate_contact = var.security_alternate_contact
-      billing_alternate_contact = var.billing_alternate_contact
-      operations_alternate_contact = var.operations_alternate_contact
+      primary_contact = local.primary_contact
+      security_alternate_contact = local.security_alternate_contact
+      billing_alternate_contact = local.billing_alternate_contact
+      operations_alternate_contact = local.operations_alternate_contact
       management_account_id = local.management_account_id
     }
   }

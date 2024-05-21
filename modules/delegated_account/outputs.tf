@@ -17,3 +17,8 @@ output "aws_lambda_function" {
   value       = aws_lambda_function.alternate_contact_lambda.arn
   description = "The Amazon Resource Name (ARN) identifying the Lambda Function"
 }
+
+output "failed_accounts" {
+  description = "List of accounts where lambda execution failed"
+  value = jsondecode(data.aws_lambda_invocation.run[0].result)
+}

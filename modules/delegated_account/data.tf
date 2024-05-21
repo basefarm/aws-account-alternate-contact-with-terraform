@@ -30,6 +30,8 @@ data "aws_iam_policy_document" "account_management_policy" {
       "account:GetAlternateContact",
       "account:PutAlternateContact",
       "account:DeleteAlternateContact",
+      "account:GetContactInformation",
+      "account:PutContactInformation",
       "organizations:ListAccounts",
     ]
     resources = ["*"]

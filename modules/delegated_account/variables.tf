@@ -4,24 +4,80 @@ variable "management_account_id" {
   default     = ""
 }
 
-variable "security_alternate_contact" {
-  type = string
-  description = "The security alternate contact details."
-  default     = ""
 locals {
   management_account_id = var.standalone ? data.aws_caller_identity.this.account_id : var.management_account_id
 }
 
+variable "primary_contact" {
+  description = "Primary contact information"
+  type = object({
+    AddressLine1  = string
+    City          = string
+    CompanyName   = string
+    CountryCode   = string
+    PhoneNumber   = string
+    PostalCode    = string
+    StateOrRegion = string
+    WebsiteUrl    = string
+
+  })
+  default = {
+    AddressLine1  = "Postboks 4488 Nydalen"
+    City          = "Oslo"
+    CompanyName   = "Orange Business Services AS"
+    CountryCode   = "NO"
+    PhoneNumber   = "+47 4000 4100"
+    PostalCode    = "0403"
+    StateOrRegion = "Oslo"
+    WebsiteUrl    = "https://cloud.orange-business.com/no/"
+  }
+}
 variable "billing_alternate_contact" {
-  type = string
   description = "The alternate contact details."
-  default     = ""
+  type = object({
+    name          = string
+    title         = string
+    email_address = string
+    phone_number  = string
+  })
+  default = {
+    name          = "Finance Department"
+    title         = "Finance Team"
+    email_address = "aws-billing@basefarm.com"
+    phone_number  = "+47 4000 4100"
+  }
 }
 
 variable "operations_alternate_contact" {
-  type = string
   description = "The alternate contact details."
-  default     = ""
+  type = object({
+    name          = string
+    title         = string
+    email_address = string
+    phone_number  = string
+  })
+  default = {
+    name          = "Operations Center"
+    title         = "Operations Center"
+    email_address = "support@basefarm-orange.com"
+    phone_number  = "+47 4001 3123"
+  }
+}
+
+variable "security_alternate_contact" {
+  description = "The security alternate contact details."
+  type = object({
+    name          = string
+    title         = string
+    email_address = string
+    phone_number  = string
+  })
+  default = {
+    name          = "Operations Center"
+    title         = "Operations Center"
+    email_address = "support@basefarm-orange.com"
+    phone_number  = "+47 4001 3123"
+  }
 }
 
 variable "alternate_contact_role" {
@@ -85,9 +141,35 @@ variable "aws_alternate_contact_bus" {
 variable "invoke_lambda" {
   description = "Controls if Lambda function should be invoked"
   type        = bool
+  default     = true
 }
 
 variable "tags" {
   description = "A map of tags to assign to the resource"
   type        = map(string)
+}
+
+locals {
+  billing_alternate_contact = format(
+    "CONTACT_TYPE=BILLING; EMAIL_ADDRESS=%s; CONTACT_NAME=%s; PHONE_NUMBER=%s; CONTACT_TITLE=%s",
+    var.billing_alternate_contact.email_address,
+    var.billing_alternate_contact.name,
+    var.billing_alternate_contact.phone_number,
+    var.billing_alternate_contact.title
+  )
+  operations_alternate_contact = format(
+    "CONTACT_TYPE=OPERATIONS; EMAIL_ADDRESS=%s; CONTACT_NAME=%s; PHONE_NUMBER=%s; CONTACT_TITLE=%s",
+    var.operations_alternate_contact.email_address,
+    var.operations_alternate_contact.name,
+    var.operations_alternate_contact.phone_number,
+    var.operations_alternate_contact.title
+  )
+  security_alternate_contact = format(
+    "CONTACT_TYPE=SECURITY; EMAIL_ADDRESS=%s; CONTACT_NAME=%s; PHONE_NUMBER=%s; CONTACT_TITLE=%s",
+    var.security_alternate_contact.email_address,
+    var.security_alternate_contact.name,
+    var.security_alternate_contact.phone_number,
+    var.security_alternate_contact.title
+  )
+  primary_contact = jsonencode(var.primary_contact)
 }
