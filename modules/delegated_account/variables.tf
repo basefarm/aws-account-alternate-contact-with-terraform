@@ -1,12 +1,15 @@
 variable "management_account_id" {
   type        = string
-  description = "The account ID of the AWS Organizations Management account"
+  description = "The account ID of the AWS Organizations Management account, optional if standalone"
+  default     = ""
 }
 
 variable "security_alternate_contact" {
   type = string
   description = "The security alternate contact details."
   default     = ""
+locals {
+  management_account_id = var.standalone ? data.aws_caller_identity.this.account_id : var.management_account_id
 }
 
 variable "billing_alternate_contact" {
@@ -65,6 +68,12 @@ variable "event_rule_description" {
   type        = string
   description = "The description of the EventBridge rule"
   default     = "EventBridge rule to trigger the alternate contact Lambda function"
+}
+
+variable "standalone" {
+  description = "Standalone deployment, no delegated admin account"
+  type        = bool
+  default     = true
 }
 
 variable "aws_alternate_contact_bus" {

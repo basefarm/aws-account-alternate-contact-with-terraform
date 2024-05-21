@@ -1,5 +1,5 @@
 output "delegated_account_bus" {
-  value       = aws_cloudwatch_event_bus.aws_alternate_contact_bus.arn
+  value       = var.standalone ? "NA" : aws_cloudwatch_event_bus.aws_alternate_contact_bus[0].arn
   description = "The ARN of the custom event bus in the delegated account"
 }
 

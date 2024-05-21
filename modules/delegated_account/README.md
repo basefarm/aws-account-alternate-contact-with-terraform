@@ -29,11 +29,11 @@ All variable details can be found in the [variables.tf](./variables.tf) file.
 
 | Variable Name               | Description                                                                      | Type         |  Default                      | Required |
 | -------------               | -----------                                                                      | --------     | -----                         |--------  |
-| `management_account_id`     | The account ID of the AWS Organizations Management account.                      | `string`     |                               | Yes      |
 | `alternate_contact_type`    | The alternate contact details. Valid values are: SECURITY, BILLING, OPERATIONS   | `map(string)`| {}                            | Yes      |
 | `alternate_contact_role`    | The AWS IAM role name that will be given to the AWS Lambda execution role        | `string`     | aws-alternate-contact-iam-role   | Yes   |
 | `alternate_contact_policy`  | The name that will be given to the Lambda execution IAM policy                   | `string`     | aws-alternate-contact-iam-policy | Yes   |
 | `lambda_function_name`      | The name of the AWS Lambda function                                              | `string`     | aws-alternate-contact         | Yes      |
+| `management_account_id`     | The account ID of the AWS Organizations Management account.                      | `string`     |                               | Not if standalone      |
 | `log_group_retention`       | The number of days you want to retain log events in the specified log group      | `number`     | 60                            | No       |
 | `reserved_concurrent_executions` | The amount of reserved concurrent executions for this Lambda Function       | `number`     | -1                            | No       |
 | `event_rule_name`           | The name of the EventBridge Rule to trigger the AWS Lambda function              | `string`     | aws-alternate-contact-rule    | Yes      |

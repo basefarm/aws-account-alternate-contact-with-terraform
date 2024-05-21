@@ -1,5 +1,7 @@
 data "aws_organizations_organization" "account_info" {}
 
+data "aws_caller_identity" "this" {}
+
 data "archive_file" "lambda_zip" {
   type        = "zip"
   output_path = "${path.module}/lambda/alternate-contact.zip"
@@ -74,6 +76,7 @@ data "aws_iam_policy_document" "account_management_policy" {
 }
 
 data "aws_iam_policy_document" "aws_alternate_contact_bus" {
+  count = var.standalone ? 0 : 1
   statement {
     sid    = "ManagementAccountAccess"
     effect = "Allow"
@@ -81,12 +84,12 @@ data "aws_iam_policy_document" "aws_alternate_contact_bus" {
       "events:PutEvents",
     ]
     resources = [
-      "${aws_cloudwatch_event_bus.aws_alternate_contact_bus.arn}"
+      "${aws_cloudwatch_event_bus.aws_alternate_contact_bus[0].arn}"
     ]
     principals {
       type = "AWS"
       identifiers = [
-        "arn:aws:iam::${var.management_account_id}:root"
+        "arn:aws:iam::${local.management_account_id}:root"
       ]
     }
     condition {
