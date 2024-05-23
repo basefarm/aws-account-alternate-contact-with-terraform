@@ -1,5 +1,5 @@
 output "delegated_account_bus" {
-  value       = aws_cloudwatch_event_bus.aws_alternate_contact_bus.arn
+  value       = var.standalone ? "NA" : aws_cloudwatch_event_bus.aws_alternate_contact_bus[0].arn
   description = "The ARN of the custom event bus in the delegated account"
 }
 
@@ -16,4 +16,9 @@ output "alternate_contact_role" {
 output "aws_lambda_function" {
   value       = aws_lambda_function.alternate_contact_lambda.arn
   description = "The Amazon Resource Name (ARN) identifying the Lambda Function"
+}
+
+output "failed_accounts" {
+  description = "List of accounts where lambda execution failed"
+  value = jsondecode(data.aws_lambda_invocation.run[0].result)
 }

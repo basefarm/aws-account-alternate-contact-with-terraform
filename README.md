@@ -3,13 +3,55 @@
 
 ## Description
 
-This Terraform module enables the programmatic implementation and management of AWS account alternate contacts on member accounts in [AWS Organizations](https://aws.amazon.com/organizations/). For additional implementation guidance, refer to the blog post on how to [manage AWS account alternate contacts with Terraform](https://amazon.com/blogs/mt/manage-aws-account-alternate-contacts-with-terraform/).
+This Terraform module enables the programmatic implementation and management of AWS account primary and alternate contacts on member accounts in [AWS Organizations](https://aws.amazon.com/organizations/). For additional implementation guidance, refer to the blog post on how to [manage AWS account alternate contacts with Terraform](https://amazon.com/blogs/mt/manage-aws-account-alternate-contacts-with-terraform/).
 
 
 ## Features
-* Programmatically manage billing, operations, or security contact across all of your accounts.
+* Programmatically manage primary, billing, operations, or security contact across all of your accounts.
 * Easily set the alternate contacts on new accounts that you create or add to AWS Organizations.
 
+
+## Deployment considerations
+
+This module has been extended to support deployment in the AWS Organizations master account.
+
+To support this you need to enable account management in the master account. This is done
+through setting the `aws_service_access_principals` for the `bf_billing_master` module:
+
+```hcl
+module "master_billing" {
+  source = "git@github.com:basefarm/bootstrap-accounts//modules/bf_billing_master?ref=v1.0.28"
+
+  customer_prefix  = var.customer_prefix
+  billing_role_arn = module.master.billing["billing_role_arn"]
+  aws_service_access_principals = [
+     "account.amazonaws.com"
+  ]
+  tags = var.tags
+  providers = {
+    aws           = aws.master
+    aws.us-east-1 = aws.master-us-east-1
+  }
+}
+```
+
+For the deployment of this module you do:
+
+```hcl
+module "alternate_contacts" {
+  source = "git@github.com:basefarm/aws-account-alternate-contact-with-terraform//modules/delegated_account?ref=1.1.0"
+  tags = var.tags
+  providers = {
+    aws           = aws.master
+  }
+}
+```
+
+You do not deploy the `management_account` sub-module at all.
+
+The primary and alternate contacts should be the same for all accounts.
+If you need to change the contact information, consider changing the
+default values in the `delegated_account` sub-module.
 
 ## Prerequisites
 
