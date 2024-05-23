@@ -8,6 +8,8 @@ locals {
   management_account_id = var.standalone ? data.aws_caller_identity.this.account_id : var.management_account_id
 }
 
+# The contact objects (primary, billing, security and operations) are
+# all based on the API names for the keys
 variable "primary_contact" {
   description = "Primary contact information"
   type = object({
@@ -33,50 +35,60 @@ variable "primary_contact" {
   }
 }
 variable "billing_alternate_contact" {
-  description = "The alternate contact details."
+  description = "The billing alternate contact details."
   type = object({
-    name          = string
-    title         = string
-    email_address = string
-    phone_number  = string
+    Name                 = string
+    Title                = string
+    EmailAddress         = string
+    PhoneNumber          = string
+    AlternateContactType = string
   })
   default = {
-    name          = "Finance Department"
-    title         = "Finance Team"
-    email_address = "aws-billing@basefarm.com"
-    phone_number  = "+47 4000 4100"
+    Name                 = "Finance Department"
+    Title                = "Finance Team"
+    EmailAddress         = "aws-billing@basefarm.com"
+    PhoneNumber          = "+47 4000 4100"
+    AlternateContactType = "BILLING"
   }
 }
 
 variable "operations_alternate_contact" {
-  description = "The alternate contact details."
+  description = "The operations alternate contact details."
   type = object({
-    name          = string
-    title         = string
-    email_address = string
-    phone_number  = string
+    Name                 = string
+    Title                = string
+    EmailAddress         = string
+    PhoneNumber          = string
+    AlternateContactType = string
+
   })
   default = {
-    name          = "Operations Center"
-    title         = "Operations Center"
-    email_address = "support@basefarm-orange.com"
-    phone_number  = "+47 4001 3123"
+    Name                 = "Operations Center"
+    Title                = "Operations Center"
+    EmailAddress         = "support@basefarm-orange.com"
+    PhoneNumber          = "+47 4001 3123"
+    AlternateContactType = "OPERATIONS"
+
   }
 }
 
 variable "security_alternate_contact" {
   description = "The security alternate contact details."
   type = object({
-    name          = string
-    title         = string
-    email_address = string
-    phone_number  = string
+    Name                 = string
+    Title                = string
+    EmailAddress         = string
+    PhoneNumber          = string
+    AlternateContactType = string
+
   })
   default = {
-    name          = "Operations Center"
-    title         = "Operations Center"
-    email_address = "support@basefarm-orange.com"
-    phone_number  = "+47 4001 3123"
+    Name                 = "Operations Center"
+    Title                = "Operations Center"
+    EmailAddress         = "support@basefarm-orange.com"
+    PhoneNumber          = "+47 4001 3123"
+    AlternateContactType = "SECURITY"
+
   }
 }
 
@@ -150,26 +162,8 @@ variable "tags" {
 }
 
 locals {
-  billing_alternate_contact = format(
-    "CONTACT_TYPE=BILLING; EMAIL_ADDRESS=%s; CONTACT_NAME=%s; PHONE_NUMBER=%s; CONTACT_TITLE=%s",
-    var.billing_alternate_contact.email_address,
-    var.billing_alternate_contact.name,
-    var.billing_alternate_contact.phone_number,
-    var.billing_alternate_contact.title
-  )
-  operations_alternate_contact = format(
-    "CONTACT_TYPE=OPERATIONS; EMAIL_ADDRESS=%s; CONTACT_NAME=%s; PHONE_NUMBER=%s; CONTACT_TITLE=%s",
-    var.operations_alternate_contact.email_address,
-    var.operations_alternate_contact.name,
-    var.operations_alternate_contact.phone_number,
-    var.operations_alternate_contact.title
-  )
-  security_alternate_contact = format(
-    "CONTACT_TYPE=SECURITY; EMAIL_ADDRESS=%s; CONTACT_NAME=%s; PHONE_NUMBER=%s; CONTACT_TITLE=%s",
-    var.security_alternate_contact.email_address,
-    var.security_alternate_contact.name,
-    var.security_alternate_contact.phone_number,
-    var.security_alternate_contact.title
-  )
-  primary_contact = jsonencode(var.primary_contact)
+  billing_alternate_contact    = jsonencode(var.billing_alternate_contact)
+  operations_alternate_contact = jsonencode(var.operations_alternate_contact)
+  security_alternate_contact   = jsonencode(var.security_alternate_contact)
+  primary_contact              = jsonencode(var.primary_contact)
 }

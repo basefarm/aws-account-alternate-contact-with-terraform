@@ -33,6 +33,8 @@ data "aws_iam_policy_document" "account_management_policy" {
       "account:GetContactInformation",
       "account:PutContactInformation",
       "organizations:ListAccounts",
+      "organizations:ListParents",
+      "organizations:ListTagsForResource"
     ]
     resources = ["*"]
     condition {
