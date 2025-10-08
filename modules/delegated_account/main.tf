@@ -30,10 +30,11 @@ resource "aws_lambda_function" "alternate_contact_lambda" {
   tags = var.tags
   environment {
     variables = {
-      security_alternate_contact = var.security_alternate_contact
-      billing_alternate_contact = var.billing_alternate_contact
-      operations_alternate_contact = var.operations_alternate_contact
-      management_account_id = var.management_account_id
+      primary_contact = local.primary_contact
+      security_alternate_contact = local.security_alternate_contact
+      billing_alternate_contact = local.billing_alternate_contact
+      operations_alternate_contact = local.operations_alternate_contact
+      management_account_id = local.management_account_id
     }
   }
 
@@ -72,20 +73,22 @@ resource "aws_cloudwatch_log_group" "alternate_contact_loggroup" {
 }
 
 resource "aws_cloudwatch_event_bus" "aws_alternate_contact_bus" {
+  count = var.standalone ? 0 : 1
   name = var.aws_alternate_contact_bus
 
   tags = var.tags
 }
 
 resource "aws_cloudwatch_event_bus_policy" "aws_alternate_contact_bus" {
-  policy         = data.aws_iam_policy_document.aws_alternate_contact_bus.json
-  event_bus_name = aws_cloudwatch_event_bus.aws_alternate_contact_bus.name
+  count = var.standalone ? 0 : 1
+  policy         = data.aws_iam_policy_document.aws_alternate_contact_bus[0].json
+  event_bus_name = aws_cloudwatch_event_bus.aws_alternate_contact_bus[0].name
 }
 
 resource "aws_cloudwatch_event_rule" "event_rule_cross_account" {
   name           = var.event_rule_name
   description    = var.event_rule_description
-  event_bus_name = aws_cloudwatch_event_bus.aws_alternate_contact_bus.name
+  event_bus_name = var.standalone ? "default" : aws_cloudwatch_event_bus.aws_alternate_contact_bus[0].name
 
   tags          = var.tags
   event_pattern = <<EOF
@@ -104,5 +107,5 @@ resource "aws_cloudwatch_event_target" "aws_alternate_contact_lambda" {
   rule           = aws_cloudwatch_event_rule.event_rule_cross_account.name
   target_id      = "SendToAWSLambda"
   arn            = aws_lambda_function.alternate_contact_lambda.arn
-  event_bus_name = aws_cloudwatch_event_bus.aws_alternate_contact_bus.name
+  event_bus_name = var.standalone ? "default" : aws_cloudwatch_event_bus.aws_alternate_contact_bus[0].name
 }

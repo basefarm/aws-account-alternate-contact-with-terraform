@@ -8,7 +8,7 @@ module "delegated_admin_account" {
   security_alternate_contact   = var.security_alternate_contact
   operations_alternate_contact = var.operations_alternate_contact
   billing_alternate_contact    = var.billing_alternate_contact
-  invoke_lambda = var.invoke_lambda
+  invoke_lambda                = var.invoke_lambda
 
   tags = var.tags
 }
