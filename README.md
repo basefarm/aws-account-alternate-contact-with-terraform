@@ -1,3 +1,5 @@
+**Repository has been archived. Functionallity has been moved to https://github.com/basefarm/terraform-aws-bf-account-contacts**
+
 # [Blog Post - Manage AWS account alternate contacts with Terraform](https://amazon.com/blogs/mt/manage-aws-account-alternate-contacts-with-terraform/)
 
 
